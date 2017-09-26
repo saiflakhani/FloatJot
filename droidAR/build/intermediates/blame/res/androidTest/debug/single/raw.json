@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/saif/Downloads/arcore-android-sdk-master/samples/FloatJot/droidAR/build/intermediates/res/merged/androidTest/debug/raw/camaro_mtl",
+        "source": "/Users/saif/Downloads/arcore-android-sdk-master/samples/FloatJot/droidAR/build/intermediates/bundles/debug/res/raw/camaro_mtl"
+    },
+    {
+        "merged": "/Users/saif/Downloads/arcore-android-sdk-master/samples/FloatJot/droidAR/build/intermediates/res/merged/androidTest/debug/raw/camaro_obj",
+        "source": "/Users/saif/Downloads/arcore-android-sdk-master/samples/FloatJot/droidAR/build/intermediates/bundles/debug/res/raw/camaro_obj"
+    }
+]
