@@ -41,55 +41,6 @@
         android:debuggable="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
-        <activity android:name="de.rwth.TechDemoLauncher" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!--
-             IMPORTANT: The following activities have to be added to each project 
-			which imports the DroidAR Library
-        -->
-
-        <activity
-            android:name="system.ArActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" >
-        </activity>
-
-        <!-- Custom List is used to easily display lists of any type of object -->
-        <activity android:name="gui.CustomListActivity" >
-        </activity>
-
-        <!-- the error handler will be automatically displayed when an error appears -->
-        <activity
-            android:name="system.ErrorHandler"
-            android:process=":myexeptionprocess"
-            android:taskAffinity="system.ErrorHandler" >
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <action android:name="android.intent.action.VIEW" />
-
-                <data android:mimeType="errors/myUnhandleCatcher" />
-            </intent-filter>
-        </activity>
-
-        <!-- is needed to display information on application startup -->
-        <activity
-            android:name="gui.InfoScreen"
-            android:theme="@android:style/Theme.Dialog" >
-        </activity>
-
-        <!-- an activity to easily display any kind of ui -->
-        <activity
-            android:name="gui.simpleUI.SimpleUIv1"
-            android:theme="@android:style/Theme.Translucent" >
-        </activity>
     </application>
 
 </manifest>
