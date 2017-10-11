@@ -6,7 +6,7 @@ android {
     compileOptions.encoding = "ISO-8859-1"
     defaultConfig {
         applicationId "com.vivifiedexistence.floatjot"
-        minSdkVersion 23
+        minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -27,6 +27,7 @@ dependencies {
     })
     compile project(':droidAR')
     compile 'com.android.support:appcompat-v7:26.+'
+    compile 'me.xdrop:fuzzywuzzy:1.1.9'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.google.code.gson:gson:2.7'

@@ -33,7 +33,7 @@ public class JSONASync extends AsyncTask<Void,Void,Void>{
     @Override
     protected Void doInBackground(Void... voids) {
         HttpHandler handler = new HttpHandler();
-        String JSON = handler.makeServiceCall("http://172.20.10.9/floatjot/getNotes.php?lastId=1");
+        String JSON = handler.makeServiceCall("http://192.168.31.143/floatjot/getNotes.php?lastId=0");
         System.out.println("JSON RESPONSE : "+JSON);
         try {
             JSONArray myarray = new JSONArray(JSON);
@@ -42,7 +42,7 @@ public class JSONASync extends AsyncTask<Void,Void,Void>{
                 JSONObject obj = myarray.getJSONObject(i);
                 FloatNoteAttributes attr = new FloatNoteAttributes();
 
-                attr.id = obj.getInt("note_id");
+                attr.id = obj.getInt("noteid");
                 attr.user_id = obj.getInt("user_id");
                 attr.vx = obj.getString("vx");
                 attr.vy = obj.getString("vy");

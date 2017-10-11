@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +30,7 @@ import gl.Color;
 import gl.GL1Renderer;
 import gl.GLFactory;
 import gl.scenegraph.MeshComponent;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
 import system.ArActivity;
 import system.DefaultARSetup;
 import util.Log;
@@ -114,22 +117,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            currLocClient = LocationServices.getFusedLocationProviderClient(this);
-            currLocClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if(location!=null){
-                        deviceLocation = location;
-                        AppGlobalData.currentLocation = location;
-                        Log.d("LATLNG", String.valueOf(deviceLocation.getLatitude()));
-                        LatLng temp = new LatLng(deviceLocation.getLatitude(), deviceLocation.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp,15));
-                        new JSONASync(MapsActivity.this).execute();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                currLocClient = LocationServices.getFusedLocationProviderClient(this);
+                currLocClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if(location!=null){
+                            deviceLocation = location;
+                            AppGlobalData.currentLocation = location;
+                            Log.d("LATLNG", String.valueOf(deviceLocation.getLatitude()));
+                            LatLng temp = new LatLng(deviceLocation.getLatitude(), deviceLocation.getLongitude());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp,15));
+                            new JSONASync(MapsActivity.this).execute();
 
+                        }
                     }
-                }
-        });
+            });
+            }
         }
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);

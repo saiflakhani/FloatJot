@@ -1,5 +1,6 @@
 package com.vivifiedexistence.floatjot;
 
+import android.content.Context;
 import android.support.annotation.StringDef;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,11 +16,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CreateAndViewActivity extends AppCompatActivity {
-
+    Context c;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        c= this;
         Button saveBtn = (Button)findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,13 +36,14 @@ public class CreateAndViewActivity extends AppCompatActivity {
                 attributes.vx = String.valueOf(AppGlobalData.currentVec.x);
                 attributes.vy = String.valueOf(AppGlobalData.currentVec.y);
                 attributes.vz = String.valueOf(AppGlobalData.currentVec.z);
+                BlockProfanity.checkProfanity(c,attributes.message);
                 //attributes.title = attributes.title.replaceAll(" ","%20");
                 //attributes.message = attributes.message.replaceAll(" ","%20");
                 AppGlobalData.notesList.add(attributes);
                 HttpHandler handler = new HttpHandler();
-                //handler.makeServiceCall("http://192.168.43.27/floatjot/addNote.php?user_id=100&title=" + attributes.title
-                      //  + "&message=" + attributes.message + "&lat=" + attributes.lat + "&lng=" + attributes.lon + "&vx=" +
-                        //attributes.vx + "&vy=" + attributes.vy + "&vz=" + attributes.vz);
+                handler.makeServiceCall("http://192.168.31.143/floatjot/addNote.php?user_id=101&title=" + attributes.title
+                        + "&message=" + attributes.message + "&lat=" + attributes.lat + "&lng=" + attributes.lon + "&vx=" +
+                        attributes.vx + "&vy=" + attributes.vy + "&vz=" + attributes.vz);
 
                 sendData(attributes);
                 finish();
@@ -49,7 +52,7 @@ public class CreateAndViewActivity extends AppCompatActivity {
     }
 
     public void sendData(FloatNoteAttributes attr){
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://172.20.10.9/floatjot/")
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://192.168.31.143/floatjot/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

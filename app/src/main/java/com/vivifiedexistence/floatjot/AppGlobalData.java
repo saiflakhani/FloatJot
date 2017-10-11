@@ -16,4 +16,5 @@ public class AppGlobalData {
     public static Vec currentVec;
     public static FloatNoteAttributes currentFloatJot;
     public static ArrayList<FloatNoteAttributes> nearbyJots = new ArrayList<>();
+    public static ArrayList<String> profanityList = new ArrayList<>();
 }
