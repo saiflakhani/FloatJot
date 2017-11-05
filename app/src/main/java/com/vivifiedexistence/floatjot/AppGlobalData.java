@@ -3,6 +3,7 @@ package com.vivifiedexistence.floatjot;
 import android.location.Location;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import util.Vec;
 
@@ -11,7 +12,7 @@ import util.Vec;
  */
 
 public class AppGlobalData {
-    public static ArrayList<FloatNoteAttributes> notesList = new ArrayList<FloatNoteAttributes>();
+    public static List<FloatNoteAttributes> notesList = new ArrayList<FloatNoteAttributes>();
     public  static Location currentLocation;
     public static Vec currentVec;
     public static FloatNoteAttributes currentFloatJot;

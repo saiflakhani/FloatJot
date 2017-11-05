@@ -22,6 +22,6 @@ public class ViewJot extends Activity {
         int id = AppGlobalData.currentFloatJot.user_id;
 
         String array[] = {"sabari360NoScope","SaifIsAWESOME!"};
-        user.setText(array[AppGlobalData.currentFloatJot.user_id - 100]);
+        user.setText("FloatJot Team");
     }
 }

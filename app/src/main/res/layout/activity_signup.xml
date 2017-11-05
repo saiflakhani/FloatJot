@@ -29,25 +29,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_alignParentBottom="true">
-            <EditText
-                android:textSize="16dp"
-                android:id="@+id/fname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Fullname"
-                android:textColorHint="#ADCCE2"
-                android:textColor="#ADCCE2"
-                android:layout_marginLeft="22dp"
-                android:inputType="text"
-                android:background="#0000"
-                android:padding="16dp"
-                android:layout_marginRight="35dp"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_height="1dp"
-                android:background="#ADCCE2" />
+
+
             <EditText
                 android:textSize="16dp"
                 android:id="@+id/mail"
@@ -57,7 +40,7 @@
                 android:textColorHint="#ADCCE2"
                 android:textColor="#ADCCE2"
                 android:layout_marginLeft="22dp"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:background="#0000"
                 android:padding="16dp"
                 android:layout_marginRight="35dp"/>
@@ -67,25 +50,7 @@
                 android:layout_marginRight="40dp"
                 android:layout_height="1dp"
                 android:background="#ADCCE2" />
-            <EditText
-                android:textSize="16dp"
-                android:id="@+id/usrusr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Username"
-                android:textColorHint="#ADCCE2"
-                android:textColor="#ADCCE2"
-                android:layout_marginLeft="22dp"
-                android:inputType="text"
-                android:background="#0000"
-                android:padding="16dp"
-                android:layout_marginRight="35dp"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_height="1dp"
-                android:background="#ADCCE2" />
+
             <EditText
                 android:textSize="16dp"
                 android:id="@+id/pswrd"
@@ -108,7 +73,7 @@
                 android:layout_marginBottom="10dp"
                 android:background="#ADCCE2"/>
             <TextView
-                android:id="@+id/sin"
+                android:id="@+id/signUp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/angle"

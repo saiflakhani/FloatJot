@@ -3,9 +3,12 @@ package com.vivifiedexistence.floatjot;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +25,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import actions.ActionWaitForAccuracy;
 import commands.Command;
@@ -43,18 +55,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public GoogleMap mMap;
     public FusedLocationProviderClient currLocClient;
     public Location deviceLocation;
-    Button viewAR,addJot;
+    FloatingActionButton addJot;
+    Button viewAR;
+    FirebaseDatabase db = FirebaseDatabase.getInstance();
+    DatabaseReference notes = db.getReference("notes");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
+
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        Button refresh = (Button)findViewById(R.id.refresh);
-        addJot = (Button)findViewById(R.id.addNote);
+        FloatingActionButton refresh = (FloatingActionButton) findViewById(R.id.refresh);
+        addJot = (FloatingActionButton) findViewById(R.id.addNote);
         addJot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,21 +92,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Color c = Color.getRandomRGBColor();
 
                                 c.alpha = 0.7f;
-                                MeshComponent arrow = GLFactory.getInstance().newDiamond(c);
-                                arrow.setPosition(vector);
-                                myWorld.add(arrow);
-                                arrow.setOnClickCommand(new Command() {
+                                MeshComponent diamond = GLFactory.getInstance().newDiamond(c);
+                                diamond.setPosition(vector);
+                                myWorld.add(diamond);
+                                diamond.setOnClickCommand(new Command() {
                                     @Override
                                     public boolean execute() {
                                         AppGlobalData.currentVec = vector;
-                                        Intent i = new Intent(MapsActivity.this,CreateAndViewActivity.class);
+                                        Intent i = new Intent(MapsActivity.this, CreateAndViewActivity.class);
                                         startActivity(i);
                                         return false;
                                     }
                                 });
                                 return false;
                             }
-                        },"Add A JotNote");
+                        }, "Add A JotNote");
                     }
                 });
             }
@@ -96,11 +117,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
 
                 new JSONASync(MapsActivity.this).execute();
+                populateMap();
 
 
             }
         });
 
+        notes.child("floatnotes").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<List<FloatNoteAttributes>> t = new GenericTypeIndicator<List<FloatNoteAttributes>>(){};
+                AppGlobalData.notesList = dataSnapshot.getValue(t);
+                List<FloatNoteAttributes> hmm = dataSnapshot.getValue(t);
+                if(mMap!=null)populateMap();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void populateMap() {
+        float min = 1000;
+        boolean callDispSnack = false;
+        for(int i=0;i<AppGlobalData.notesList.size();i++)
+        {
+            double latitude = Double.parseDouble(AppGlobalData.notesList.get(i).lat);
+            double longitude = Double.parseDouble(AppGlobalData.notesList.get(i).lon);
+            LatLng latlng = new LatLng(latitude,longitude);
+            Location loctemp = new Location("");
+            loctemp.setLatitude(latlng.latitude);
+            loctemp.setLongitude(latlng.longitude);
+
+            mMap.addMarker(new MarkerOptions().position(latlng).title("FloatJot here!"));
+            float dist = deviceLocation.distanceTo(loctemp);
+            if(dist < 100){
+                AppGlobalData.nearbyJots.add(AppGlobalData.notesList.get(i));
+                callDispSnack= true;
+            }
+
+        }
+        Log.d("TAG","MIN DISTANCE"+min);
+
+        if(callDispSnack)
+        {
+            dispSnackbar();
+        }
     }
 
 
@@ -116,7 +181,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 currLocClient = LocationServices.getFusedLocationProviderClient(this);
@@ -130,21 +194,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             LatLng temp = new LatLng(deviceLocation.getLatitude(), deviceLocation.getLongitude());
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp,15));
                             new JSONASync(MapsActivity.this).execute();
+                            populateMap();
 
                         }
                     }
             });
+
+
+            }
+
+
+
+    }else{
+            LocationManager manager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String bestProvider = manager.getBestProvider(criteria, false);
+            Location location = manager.getLastKnownLocation(bestProvider);
+            if(location!=null){
+                deviceLocation = location;
+                AppGlobalData.currentLocation = location;
+                Log.d("LATLNG", String.valueOf(deviceLocation.getLatitude()));
+                LatLng temp = new LatLng(deviceLocation.getLatitude(), deviceLocation.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp,15));
+                new JSONASync(MapsActivity.this).execute();
+                populateMap();
+
             }
         }
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //LatLng temp = new LatLng(deviceLocation.getLatitude(), deviceLocation.getLongitude());
-       // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
+
 
     }
+    // Add a marker in Sydney and move the camera
+    //LatLng sydney = new LatLng(-34, 151);
+    //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+    //LatLng temp = new LatLng(deviceLocation.getLatitude(), deviceLocation.getLongitude());
+    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
 
-    public void dispSnackbar(){
+
+
+    public void dispSnackbar() {
 
         Toast.makeText(this, "Jot nearby, click button to continue", Toast.LENGTH_SHORT).show();
         Log.d("DIST", "kappa<1000");
@@ -180,8 +268,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                            }
 //                        },"Add A JotNote");
 
-                        for(int i=0;i<AppGlobalData.nearbyJots.size();i++)
-                        {
+                        for (int i = 0; i < AppGlobalData.nearbyJots.size(); i++) {
                             final int val = i;
                             Color c = Color.getRandomRGBColor();
                             c.alpha = 0.7f;
@@ -207,15 +294,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 @Override
                                 public boolean execute() {
                                     AppGlobalData.currentFloatJot = AppGlobalData.nearbyJots.get(val);
-                                    Intent in = new Intent(MapsActivity.this,ViewJot.class);
+                                    Intent in = new Intent(MapsActivity.this, ViewJot.class);
                                     startActivity(in);
                                     return false;
                                 }
                             });
                         }
-
-
-
 
 
                     }
